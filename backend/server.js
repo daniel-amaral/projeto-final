@@ -1,16 +1,21 @@
 'use strict'
 
 const express = require('express')
+const cors = require('cors')
 const bodyParser = require('body-parser')
 
 const app = express()
 const port = 3000
 
-app.use(bodyParser.json()); // to parse the http requisitions
+app.use(express.static(__dirname + '/public'))
+app.use(bodyParser.json());
 
-app.get('/', function(req, res){
-	console.log("requisition retrieved")
-})
+app.use(function(req, res, next) {
+	res.set('Access-Control-Allow-Origin', '*');
+	res.set('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT');
+	res.set('Access-Control-Allow-Headers', 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'); //needs to work with DELETE verb
+	next();
+});
 
 app.post('/sample-post', function(req, res){
 
@@ -19,6 +24,7 @@ app.post('/sample-post', function(req, res){
 
 	console.log('machine: ', machine)
 	console.log('heliumLevel: ', heliumLevel)
+	console.log()
 		
 	res.json({
 		code: 200,
@@ -28,17 +34,11 @@ app.post('/sample-post', function(req, res){
 	return;
 })
 
-let writeOnFile = function (filename, output) {
-	fs.writeFile(__dirname + '/' + filename , output, function(err) {
-	    if(err) {
-	        return console.log(err)
-	    }
 
-	    console.log("The file was saved!")
-	})
-}
+require('./app/routes.js')(app, cors)
 
 
 app.listen(port, () => {
-	console.log('\nServer running at http://localhost:' + port +'\n')
+	console.log('\nApplication running on http://localhost:%d', port)
+	console.log('\n(Server started, use Ctrl+C to stop and go back to the console...)\n')
 });
