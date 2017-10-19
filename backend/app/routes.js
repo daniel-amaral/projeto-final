@@ -7,7 +7,7 @@ module.exports = function(app, cors){
     sequelize
         .authenticate()
         .then(() => {
-        console.log('Connection has been established successfully.');
+        console.log('DATABASE: Connection has been established successfully.');
         })
         .catch(err => {
         console.error('Unable to connect to the database:', err);
@@ -16,6 +16,22 @@ module.exports = function(app, cors){
     app.use(cors());
     app.options('*', cors());
     
+    app.post('/api/helium-measure-echo', (req, res) => {
+        let body = req.body
+        console.log(`machine: ${body.machine}, level: ${body.heliumLevel}`)
+        res.sendStatus(200)
+    })
+
+    app.get('/api/find-all-helium-measures/:machine-name', (req, res) => {
+        sequelize.query(
+            `SELECT * FROM helium_measure WHERE machine_id =
+                (SELECT id FROM machine WHERE machine_name = ${req.params.id})`,
+            { type: sequelize.QueryTypes.SELECT })
+                .then(result => {
+                    res.send(result)
+                })
+    })
+
     app.post('/api/helium-measure', (req, res) => {
         let body = req.body
         console.log(`machine: ${body.machine}, level: ${body.heliumLevel}`)
