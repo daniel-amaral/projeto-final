@@ -32,6 +32,16 @@ module.exports = function(app, cors){
                 })
     })
 
+    app.get('/api/test', (req, res) => {
+        sequelize.query(
+            `SELECT * FROM helium_measure WHERE machine_id =
+                (SELECT id FROM machine WHERE machine_name = 'arduino-sample')`,
+            { type: sequelize.QueryTypes.SELECT })
+                .then(result => {
+                    res.send(result)
+                })
+    })
+
     app.post('/api/helium-measure', (req, res) => {
         let body = req.body
         console.log(`machine: ${body.machine}, level: ${body.heliumLevel}`)
