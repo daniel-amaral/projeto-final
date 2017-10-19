@@ -22,10 +22,10 @@ module.exports = function(app, cors){
         res.sendStatus(200)
     })
 
-    app.get('/api/find-all-helium-measures/:machine-name', (req, res) => {
+    app.get('/api/find-all-helium-measures/:machineName', (req, res) => {
         sequelize.query(
             `SELECT * FROM helium_measure WHERE machine_id =
-                (SELECT id FROM machine WHERE machine_name = ${req.params.machine-name})`,
+                (SELECT id FROM machine WHERE machine_name = ${req.params.machineName})`,
             { type: sequelize.QueryTypes.SELECT })
                 .then(result => {
                     res.send(result)
